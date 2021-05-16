@@ -1,70 +1,60 @@
-import {IResultSelection, getResult, escapeRegExp, trim} from '../baseexpander';
+import { IResultSelection, getResult, trim } from '../baseexpander';
 export function expand_to_semantic_unit(text: string, startIndex: number, endIndex: number): IResultSelection {
-    const symbols = "([{)]}"
-    const breakSymbols = ",;=&|\n\r"
+    const symbols = "([{)]}\""
+    const breakSymbols = ",;=&|+"
     const lookBackBreakSymbols = breakSymbols + "([{"
     const lookForwardBreakSymbols = breakSymbols + ")]}"
-    const symbolsRe = new RegExp(`[${escapeRegExp(symbols)}${escapeRegExp(breakSymbols)}]`);
     const counterparts = {
         "(": ")",
         "{": "}",
         "[": "]",
         ")": "(",
         "}": "{",
+        "\"": "\"",
         "]": "["
     }
     let symbolStack = []
 
     let searchIndex = startIndex - 1;
-    let newStartIndex, newEndIndex;
+    let newStartIndex: number, newEndIndex: number;
     while (true) {
         if (searchIndex < 0) {
             newStartIndex = searchIndex + 1
             break
         }
-        let char = text.substring(searchIndex, searchIndex + 1)
-        let result = symbolsRe.exec(char);
-        if (result) {
-            let symbol = result[0];
-            if (lookBackBreakSymbols.indexOf(symbol) != -1 && symbolStack.length == 0) {
-                newStartIndex = searchIndex + 1
-                break
+        let char = text[searchIndex]
+        if (symbolStack.length == 0 && lookBackBreakSymbols.indexOf(char) != -1) {
+            newStartIndex = searchIndex + 1
+            break
+        }
+        if (symbols.indexOf(char) != -1) {
+            if (symbolStack.length > 0 && symbolStack[symbolStack.length - 1] == counterparts[char]) {
+                symbolStack.pop()
             }
-            if (symbols.indexOf(symbol) != -1) {
-                if (symbolStack.length > 0 && symbolStack[symbolStack.length - 1] == counterparts[symbol]) {
-                    symbolStack.pop()
-                }
-                else {
-                    symbolStack.push(symbol)
-                }
+            else {
+                symbolStack.push(char)
             }
-            // # print(char, symbolStack)
         }
         searchIndex -= 1
     }
     searchIndex = endIndex;
     while (true) {
-        let char = text.substring(searchIndex, searchIndex + 1)
-        let result = symbolsRe.exec(char)
-        if (result) {
-            let symbol = result[0]
-            if (symbolStack.length == 0 && lookForwardBreakSymbols.indexOf(symbol) != -1) {
-                newEndIndex = searchIndex;
-                break
+        if (searchIndex == text.length) {
+            return null // TODO(CVZ)
+        }
+        let char = text[searchIndex]
+        if (symbolStack.length == 0 && lookForwardBreakSymbols.indexOf(char) != -1) {
+            newEndIndex = searchIndex;
+            break
+        }
+        if (symbols.indexOf(char) != -1) {
+            if (symbolStack.length > 0 && symbolStack[symbolStack.length - 1] == counterparts[char]) {
+                symbolStack.pop()
             }
-            if (symbols.indexOf(symbol) != -1) {
-                if (symbolStack.length > 0 && symbolStack[symbolStack.length - 1] == counterparts[symbol]) {
-                    symbolStack.pop()
-                }
-                else {
-                    symbolStack.push(symbol)
-                }
+            else {
+                symbolStack.push(char)
             }
         }
-        if (searchIndex >= text.length - 1) {
-            return null
-        }
-        //# print(char, symbolStack, searchIndex)
         searchIndex += 1
     }
     let s = text.substring(newStartIndex, newEndIndex);

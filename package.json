@@ -6,13 +6,13 @@
   "publisher": "letrieu",
   "icon": "icon.png",
   "bugs": {
-    "url": "https://github.com/windwp/vscode-expand-region/issues"
+    "url": "https://github.com/cvzakharchenko/vscode-expand-region/issues"
   },
   "repository": {
-        "type": "git",
-        "url": "https://github.com/windwp/vscode-expand-region.git"
+    "type": "git",
+    "url": "https://github.com/cvzakharchenko/vscode-expand-region.git"
   },
-  "homepage": "https://github.com/windwp/vscode-expand-region/blob/master/README.md",
+  "homepage": "https://github.com/cvzakharchenko/vscode-expand-region/blob/master/README.md",
   "engines": {
     "vscode": "^1.1.5"
   },
@@ -28,8 +28,9 @@
       {
         "command": "expand_region",
         "title": "Expand Region"
-      },{
-        "command":"undo_expand_region",
+      },
+      {
+        "command": "undo_expand_region",
         "title": "Undo Expand Region"
       }
     ]
@@ -42,11 +43,11 @@
     "test:watch": "npm run test -- --watch"
   },
   "devDependencies": {
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.40",
+    "eslint": "^3.6.0",
     "mocha": "^3.5.0",
     "typescript": "^2.4.2",
-    "vscode": "^1.1.5",
-    "eslint": "^3.6.0",
-    "@types/node": "^6.0.40",
-    "@types/mocha": "^2.2.32"
+    "vscode": "^1.1.5"
   }
 }
